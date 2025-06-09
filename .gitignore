@@ -1,1 +1,18 @@
+# Global
+.env
+.DS_Store
 
+# Logs
+logs
+*.log
+
+# Node
+node_modules/
+
+# React
+webui/build/
+webui/node_modules/
+
+# IDEs
+.vscode/
+.idea/
