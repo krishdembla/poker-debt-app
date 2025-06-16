@@ -1,0 +1,8 @@
+curl -X POST http://localhost:5050/api/game/4876b61e-be2e-4822-a444-39044a084b59/cashout \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Krish", "cashOut": 900}'
+
+
+curl -X POST http://localhost:5050/api/game/4876b61e-be2e-4822-a444-39044a084b59/player \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Krish", "buyIn": 500}'
