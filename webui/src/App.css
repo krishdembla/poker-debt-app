@@ -56,3 +56,25 @@ td {
   padding: 0.5rem;
   text-align: center;
 }
+
+/* Net coloring */
+.positive {
+  color: green;
+  font-weight: 600;
+}
+.negative {
+  color: crimson;
+  font-weight: 600;
+}
+
+/* Transactions list */
+.tx-list {
+  list-style: none;
+  padding-left: 0;
+}
+.tx-item {
+  margin: 0.25rem 0;
+}
+.tx-item span.amount {
+  font-weight: 600;
+}

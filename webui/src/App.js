@@ -1,13 +1,32 @@
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import GamesList from './pages/GamesList';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import RequireAuth from './components/RequireAuth';
 import GamePage from './pages/GamePage';
 import './App.css';
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/game/:id" element={<GamePage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <GamesList />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/game/:id"
+        element={
+          <RequireAuth>
+            <GamePage />
+          </RequireAuth>
+        }
+      />
     </Routes>
   );
 }

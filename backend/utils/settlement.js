@@ -1,44 +1,47 @@
-// Greedy min-cash-flow settlement algorithm
+// Optimal minimum-cash-flow settlement algorithm (recursive)
+// This guarantees the minimum number of transactions.
+// Reference: https://www.geeksforgeeks.org/minimize-cash-flow-among-given-set-friends-borrowed-money/
 // Input: { playerName: netBalance }
 // Output: Array of { from, to, amount }
 // Positive net -> creditor, negative -> debtor
 function calculateSettlement(nets) {
-  const debtors = [];
-  const creditors = [];
-
-  for (const [name, net] of Object.entries(nets)) {
-    if (net < 0) {
-      debtors.push({ name, amount: -net }); // owe amount
-    } else if (net > 0) {
-      creditors.push({ name, amount: net }); // to receive amount
-    }
-  }
-
-  // Sort largest first for efficient matching
-  debtors.sort((a, b) => b.amount - a.amount);
-  creditors.sort((a, b) => b.amount - a.amount);
-
+  const names = Object.keys(nets);
+  const balance = names.map((n) => nets[n]);
   const transactions = [];
 
-  while (debtors.length && creditors.length) {
-    const debtor = debtors[0];
-    const creditor = creditors[0];
-    const settled = Math.min(debtor.amount, creditor.amount);
+  const getMaxIndex = (arr) =>
+    arr.reduce((maxIdx, val, idx) => (val > arr[maxIdx] ? idx : maxIdx), 0);
+  const getMinIndex = (arr) =>
+    arr.reduce((minIdx, val, idx) => (val < arr[minIdx] ? idx : minIdx), 0);
 
-    transactions.push({ from: debtor.name, to: creditor.name, amount: settled });
+  function settle() {
+    const mxCredit = getMaxIndex(balance);
+    const mxDebit = getMinIndex(balance);
 
-    debtor.amount -= settled;
-    creditor.amount -= settled;
+    if (
+      Math.abs(balance[mxCredit]) < 1e-9 &&
+      Math.abs(balance[mxDebit]) < 1e-9
+    ) {
+      return;
+    }
 
-    if (debtor.amount === 0) debtors.shift();
-    if (creditor.amount === 0) creditors.shift();
+    const amount = Math.min(-balance[mxDebit], balance[mxCredit]);
+    balance[mxCredit] -= amount;
+    balance[mxDebit] += amount;
 
-    // keep lists sorted – simple because we only changed first elements
-    debtors.sort((a, b) => b.amount - a.amount);
-    creditors.sort((a, b) => b.amount - a.amount);
+    transactions.push({
+      from: names[mxDebit],
+      to: names[mxCredit],
+      amount,
+    });
+
+    settle();
   }
 
+  settle();
   return transactions;
 }
 
 module.exports = { calculateSettlement };
+
+

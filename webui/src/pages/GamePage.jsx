@@ -93,7 +93,7 @@ const GamePage = () => {
               <td>{p.name}</td>
               <td>{p.totalBuyIn}</td>
               <td>{p.cashOut}</td>
-              <td>{p.net}</td>
+              <td className={p.net >= 0 ? 'positive' : 'negative'}>{p.net}</td>
             </tr>
           ))}
         </tbody>
@@ -104,10 +104,10 @@ const GamePage = () => {
       {transactions.length > 0 && (
         <div>
           <h3>Transactions</h3>
-          <ul>
+          <ul className="tx-list">
             {transactions.map((t, idx) => (
-              <li key={idx}>
-                {t.from} pays {t.to}: {t.amount}
+              <li key={idx} className="tx-item">
+                {t.from} pays {t.to}: <span className="amount">{t.amount}</span>
               </li>
             ))}
           </ul>
