@@ -3,8 +3,9 @@ const cors = require('cors');
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const dbModule = require('./db');
-const { createGame, getGame, saveGame, listGames } = dbModule;
+const { createGame, getGame, saveGame, listGames, deleteGame, renameGame } = dbModule;
 const { calculateSettlement } = require('./utils/settlement');
+const { validateBuyIn, validateCashOut, validateAuth, validateCreateGame, validateNameBody } = require('./validate');
 const { register, login, verifyToken } = require('./auth');
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(cors()); //enable CORS for all routes
 app.use(express.json());
 
 // public routes for auth
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', validateAuth, async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Missing credentials' });
   try {
@@ -25,7 +26,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', validateAuth, async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Missing credentials' });
   try {
@@ -54,11 +55,21 @@ app.use((req, res, next) => {
 
 
 
-//adding route to creae a new game
-app.post('/api/game', (req, res) => {
-  const gameId = uuidv4(); //generate id
-  createGame(gameId, req.user.id);
-  res.status(201).json({ gameId }); //respond with gameId to frontend
+// Create game
+app.post('/api/game', validateCreateGame, (req, res) => {
+  const gamesCount = listGames(req.user.id).length;
+  const gameId = uuidv4();
+  const { currency = 'USD', date = new Date().toISOString(), title = `Game ${gamesCount + 1}`, players = [] } = req.body;
+  const metadata = { currency, date, title };
+  const game = createGame(gameId, req.user.id, metadata);
+  players.forEach((name) => {
+    if (name && !game.players[name]) {
+      game.players[name] = { buyIns: [], cashOut: null };
+    }
+  });
+  saveGame(gameId, game);
+  res.status(201).json({ gameId, title });
+  
 });
 
 // list existing games for this user
@@ -67,18 +78,39 @@ app.get('/api/games', (req, res) => {
   res.json({ games });
 });
 
+// rename game title
+app.patch('/api/game/:id/title', (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+  if (!title) return res.status(400).json({ error: 'Title required' });
+  const ok = renameGame(id, title);
+  if (!ok) return res.status(404).json({ error: 'Game not found' });
+  res.json({ message: 'Renamed', title });
+});
+
+// update game date
+app.patch('/api/game/:id/date', (req, res) => {
+  const { id } = req.params;
+  const { date } = req.body;
+  if (!date) return res.status(400).json({ error: 'Date required' });
+  const game = getGame(id, req.user.id);
+  if (!game) return res.status(404).json({ error: 'Game not found' });
+  game.metadata = { ...(game.metadata || {}), date };
+  saveGame(id, game);
+  res.json({ message: 'Date updated', date });
+});
+
 app.delete('/api/game/:id', (req, res) => {
   const { id } = req.params;
   const game = getGame(id, req.user.id);
   if (!game) return res.status(404).json({ error: 'Game not found' });
-  db.prepare('DELETE FROM games WHERE id = ?').run(id);
+  deleteGame(id);
   res.json({ message: 'Deleted' });
+  
 });
 
-
-
 //adding players and buy ins
-app.post('/api/game/:id/player', (req,res) => {
+app.post('/api/game/:id/player', validateBuyIn, (req,res) => {
   const {id} = req.params; //getting game id
   const {name, buyIn} = req.body;
 
@@ -87,10 +119,7 @@ app.post('/api/game/:id/player', (req,res) => {
   if (!game) {
     return res.status(404).json({ error: 'Game not found' });
   }
-  //validate player name and buyIn
-  if (!name || !buyIn || isNaN(buyIn) || buyIn <= 0) {
-    return res.status(400).json({ error: 'Invalid player or buy-in' });
-  }
+  
   // game fetched above
   
   //if player does not exist, create a new player, else add buyIn to existing player
@@ -102,13 +131,14 @@ app.post('/api/game/:id/player', (req,res) => {
 
   saveGame(id, game);
   res.status(200).json({ message: `Buy-in added for ${name}`, player: game.players[name] });
+  
 })
 
 
 
 
 //adding cash out for players
-app.post('/api/game/:id/cashout', (req, res) => {
+app.post('/api/game/:id/cashout', validateCashOut, (req, res) => {
   const {id} = req.params;
   const {name, cashOut} = req.body;
 
@@ -117,9 +147,7 @@ app.post('/api/game/:id/cashout', (req, res) => {
   if (!game) {
     return res.status(404).json({ error: 'Game not found' });
   }
-  if (!name || cashOut == null || isNaN(cashOut)) {
-    return res.status(400).json({ error: 'Invalid player or cash out amount' });
-  }
+  
 
   const player = game.players[name];
   if(!player) {
@@ -129,6 +157,31 @@ app.post('/api/game/:id/cashout', (req, res) => {
   player.cashOut = cashOut; //set cash out amount for player
   saveGame(id, game);
   res.status(200).json({ message: `Cash out recorded for ${name}`, player });
+  
+});
+
+// Remove player via body or query
+app.delete('/api/game/:id/player', (req, res) => {
+  const { id } = req.params;
+  const name = req.body.name || req.query.name;
+  if (!name) return res.status(400).json({ error: 'Name required' });
+  const game = getGame(id, req.user.id);
+  if (!game) return res.status(404).json({ error: 'Game not found' });
+  if (!game.players[name]) return res.status(404).json({ error: 'Player not found' });
+  delete game.players[name];
+  saveGame(id, game);
+  res.json({ message: `Removed ${name}` });
+});
+
+// Remove player via URL param (easier for clients)
+app.delete('/api/game/:id/player/:name', (req, res) => {
+  const { id, name } = req.params;
+  const game = getGame(id, req.user.id);
+  if (!game) return res.status(404).json({ error: 'Game not found' });
+  if (!game.players[name]) return res.status(404).json({ error: 'Player not found' });
+  delete game.players[name];
+  saveGame(id, game);
+  res.json({ message: `Removed ${name}` });
 });
 
 // Get game summary (net for each player)
@@ -146,7 +199,7 @@ app.get('/api/game/:id/summary', (req, res) => {
     return { name, totalBuyIn, cashOut, net };
   });
 
-  res.json({ summary });
+  res.json({ summary, metadata: { currency: 'USD', date: null, title: 'Game' , ...game.metadata } });
 });
 
 // Direct settlement without game context

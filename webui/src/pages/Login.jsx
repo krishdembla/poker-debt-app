@@ -23,7 +23,8 @@ const Login = () => {
 
   return (
     <div className="container">
-      <h2>Login</h2>
+      <div className="brand">ChipMate</div>
+      <h3 style={{textAlign:'center', marginBottom:'1rem'}}>Login</h3>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />

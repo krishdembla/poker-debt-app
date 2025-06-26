@@ -28,7 +28,7 @@ api.interceptors.response.use(
   }
 );
 
-export const createGame = () => api.post('/game');
+export const createGame = (data) => api.post('/game', data);
 export const addBuyIn = (gameId, data) => api.post(`/game/${gameId}/player`, data);
 export const addCashOut = (gameId, data) => api.post(`/game/${gameId}/cashout`, data);
 export const fetchSummary = (gameId) => api.get(`/game/${gameId}/summary`);
@@ -37,5 +37,8 @@ export const listGames = () => api.get('/games');
 export const login = (data) => api.post('/login', data);
 export const registerUser = (data) => api.post('/register', data);
 export const deleteGame = (id) => api.delete(`/game/${id}`);
+export const renameGame = (id, title) => api.patch(`/game/${id}/title`, { title });
+export const updateGameDate = (id, date) => api.patch(`/game/${id}/date`, { date });
+export const removePlayer = (gameId, name) => api.delete(`/game/${gameId}/player/${encodeURIComponent(name)}`);
 
 export default api;

@@ -21,7 +21,8 @@ const Register = () => {
 
   return (
     <div className="container">
-      <h2>Register</h2>
+      <div className="brand">ChipMate</div>
+      <h3 style={{textAlign:'center', marginBottom:'1rem'}}>Register</h3>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
