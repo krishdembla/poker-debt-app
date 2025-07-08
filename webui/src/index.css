@@ -1,3 +1,43 @@
+:root {
+  /* Main theme colors from App.css */
+  --cream: #fdfdf7;
+  --dark: #2b2b2b;
+  --container-bg: #ffffff;
+  --accent: #ff6b3d;
+  
+  /* Derived theme variables */
+  --bg-color: var(--cream);
+  --card-bg: var(--accent);  /* Using the accent color for cards */
+  --card-hover: #ff8559;     /* Slightly lighter accent on hover */
+  --text-primary: #2b2b2b;   /* Dark grey text to match app background */
+  --text-secondary: #3a3a3a; /* Slightly lighter grey for secondary text */
+  --border-color: #e65100;   /* Slightly darker orange border */
+  --primary-color: #2b2b2b;  /* Dark grey for primary actions */
+  --primary-hover: #ffd3c2;  /* Light orange for hover states */
+  --secondary-color: #ffd180; /* Light orange for secondary elements */
+  --error-color: #ff3d00;    /* Bright red for errors */
+  --button-bg: #e65100;      /* Darker orange for buttons */
+  --button-hover: #f57c00;   /* Brighter orange on hover */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --cream: #1e1e1e;
+  --dark: #f5f5f5;
+  --container-bg: #2b2b2b;
+  --accent: #ff8559;
+  
+  /* Dark theme overrides */
+  --card-bg: var(--accent);
+  --card-hover: #ff9d7a;
+  --text-primary: #f5f5f5;   /* Light text for dark theme */
+  --text-secondary: #e0e0e0; /* Lighter grey for secondary text in dark theme */
+  --border-color: #e68a6a;   /* Slightly darker border */
+  --button-bg: #e66842;      /* Slightly darker button */
+  --button-hover: #ff9d7a;   /* Lighter hover */
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,6 +45,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 code {

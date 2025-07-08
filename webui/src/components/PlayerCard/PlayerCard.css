@@ -1,0 +1,226 @@
+.player-card {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--card-bg);
+  color: var(--dark); /* Use the dark text color from theme */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 4px solid var(--primary-color);
+  backdrop-filter: brightness(1.02);
+  border: 1px solid rgba(255, 167, 38, 0.3);
+}
+
+.player-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+  background: var(--card-hover);
+}
+
+.player-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px) scale(1.01);
+  background: var(--card-hover);
+  border-color: var(--primary-hover);
+}
+
+.player-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  transition: all 0.2s ease;
+  background: inherit;
+  z-index: 1;
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #2b2b2b; /* Dark grey to match webpage background */
+}
+
+.player-amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--text-secondary, #666666);
+  font-size: 0.9rem;
+}
+
+.net-amount {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--dark); /* Use dark text color for positive amounts */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.net-amount.negative {
+  color: #ff1744; /* Brighter red for better visibility */
+  font-weight: 800; /* Slightly bolder for emphasis */
+}
+
+.buyin-amount {
+  font-size: 0.8rem;
+  color: var(--dark); /* Use dark text color for buy-in amounts */
+  opacity: 0.8; /* Slightly transparent for secondary text */
+}
+
+.player-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  align-items: center;
+  margin-left: 0.5rem;
+  border: 1px solid var(--border-color, #eee);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.action-btn {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 1 !important;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  visibility: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+.action-label {
+  position: absolute;
+  top: 100%;
+  font-size: 0.7rem;
+  color: #666;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  margin-top: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.action-item:hover .action-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.action-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  color: #d32f2f;
+}
+
+.delete-btn:hover {
+  background-color: rgba(211, 47, 47, 0.1);
+}
+
+.edit-btn {
+  color: #1976d2;
+}
+
+.edit-btn:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+}
+
+.cashout-btn {
+  color: #2e7d32;
+}
+
+.cashout-btn:hover {
+  background-color: rgba(46, 125, 50, 0.1);
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
+  .action-label {
+    position: static;
+    opacity: 1;
+    transform: none;
+    background: transparent;
+    color: #666;
+    padding: 0;
+    margin-top: 2px;
+    font-size: 0.6rem;
+    font-weight: normal;
+    box-shadow: none;
+    margin-top: 0;
+  }
+  
+  .action-item {
+    gap: 0;
+    flex-direction: column;
+    align-items: center;
+    min-width: 36px;
+  }
+  
+  .action-btn {
+    width: 30px;
+    height: 30px;
+    margin: 0 2px;
+  }
+  
+  .player-actions {
+    gap: 0.5rem;
+  }
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .player-card .player-actions {
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .player-card:hover .player-actions {
+    opacity: 1;
+  }
+  
+  .player-card.show-actions .player-card-content {
+    transform: none;
+  }
+}

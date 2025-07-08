@@ -1,0 +1,200 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-content {
+  background: var(--bg-color, #ffffff);
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color, #e0e0e0);
+  animation: slideUp 0.25s ease-out;
+  box-sizing: border-box;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.dialog-content h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-primary, #333);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary, #333);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary, #333);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: var(--input-bg, #fff);
+  color: #333; /* Force dark text color */
+  box-sizing: border-box;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* Ensure text color is always visible */
+.form-group input,
+.form-group input::placeholder {
+  color: #333 !important;
+  opacity: 1; /* Firefox */
+}
+
+/* For WebKit browsers */
+.form-group input::-webkit-input-placeholder {
+  color: #666 !important;
+}
+
+/* For Firefox */
+.form-group input::-moz-placeholder {
+  color: #666 !important;
+}
+
+/* For IE/Edge */
+.form-group input::-ms-input-placeholder {
+  color: #666 !important;
+}
+
+/* Remove number input spinners */
+.form-group input::-webkit-outer-spin-button,
+.form-group input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent, #ff6b3d);
+  box-shadow: 0 0 0 3px rgba(255, 107, 61, 0.2);
+}
+
+/* Ensure inputs are clickable and don't close the dialog */
+.form-group input,
+.form-group input:focus {
+  pointer-events: auto;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #eee);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+.cancel-btn {
+  background-color: var(--button-bg, #f0f0f0);
+  color: var(--text-primary, #333);
+  border: 1px solid var(--border-color, #ddd);
+}
+
+.cancel-btn:hover {
+  background-color: var(--button-hover, #e0e0e0);
+  transform: translateY(-1px);
+}
+
+.submit-btn {
+  background-color: var(--accent, #ff6b3d);
+  color: white;
+  box-shadow: 0 2px 4px rgba(255, 107, 61, 0.2);
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.submit-btn:not(:disabled):hover {
+  background-color: #ff7a4d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 107, 61, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .dialog-content {
+    padding: 1.5rem;
+    width: 85%;
+  }
+  
+  .dialog-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+    padding: 0.85rem;
+  }
+}
