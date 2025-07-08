@@ -92,7 +92,13 @@ function broadcastGameUpdate(gameId, updateType, data) {
   }
 }
 
-app.use(cors()); //enable CORS for all routes
+// Allow only your frontend domain in production, fallback to localhost:3000 in dev
+const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
+app.use(cors({
+  origin: allowedOrigin,
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Apply rate limiting to all routes

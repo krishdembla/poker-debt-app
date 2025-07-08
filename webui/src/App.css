@@ -282,5 +282,26 @@ button:active {
   to { opacity:1; }
 }
 
+.home-card {
+  /* For custom Home page card styling if needed */
+}
+
+.home-features-row {
+  /* Default: horizontal row */
+}
+
+@media (max-width: 600px) {
+  .home-card {
+    max-width: 98vw;
+    min-height: 60vh;
+    padding: 1.2rem 0.5rem 1.5rem 0.5rem !important;
+  }
+  .home-features-row {
+    flex-direction: column !important;
+    gap: 1.1rem !important;
+    align-items: center !important;
+  }
+}
+
 
 
