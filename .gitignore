@@ -8,6 +8,17 @@ logs
 
 # Node
 node_modules/
+backend/node_modules/
+webui/node_modules/
+
+# Dependency lock files (optional, but keep if you want reproducible builds)
+# If you want to keep lock files, comment out the next three lines
+package-lock.json
+backend/package-lock.json
+webui/package-lock.json
+
+# Build output
+webui/build/
 
 # React
 webui/build/
