@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ConfirmDialog = ({ open, message, onConfirm, onCancel, confirmLabel = 'Delete', cancelLabel = 'Cancel' }) => {
+const ConfirmDialog = ({ open, message, onConfirm, onCancel, confirmLabel = 'Yes', cancelLabel = 'Cancel' }) => {
   if (!open) return null;
   return (
     <div className="confirm-overlay">

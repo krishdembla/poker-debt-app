@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 
 const WebSocketContext = createContext();
 
@@ -10,7 +10,7 @@ export const WebSocketProvider = ({ children }) => {
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
 
-  const connect = () => {
+  const connect = useCallback(() => {
     const token = localStorage.getItem('poker_token');
     if (!token) return;
 
@@ -48,7 +48,7 @@ export const WebSocketProvider = ({ children }) => {
     wsRef.current.onerror = (error) => {
       console.error('WebSocket error:', error);
     };
-  };
+  }, []);
 
   const joinGame = (gameId) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
