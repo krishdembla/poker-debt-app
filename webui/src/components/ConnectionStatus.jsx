@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 const ConnectionStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
