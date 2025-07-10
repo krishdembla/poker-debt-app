@@ -7,6 +7,10 @@ export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 const getToken = () => localStorage.getItem(TOKEN_KEY);
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5050/api";
+
+// Debug: Log the API URL being used
+console.log('API_URL being used:', API_URL);
+
 const api = axios.create({
   baseURL: API_URL, 
 });
