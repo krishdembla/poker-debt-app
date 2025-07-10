@@ -3,7 +3,7 @@
       "builder": "NIXPACKS"
     },
     "deploy": {
-      "startCommand": "node webui/server.js",
+      "startCommand": "npm run build && npx serve -s build -l $PORT",
       "rootDirectory": "webui"
     }
   }
