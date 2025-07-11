@@ -92,10 +92,22 @@ function broadcastGameUpdate(gameId, updateType, data) {
   }
 }
 
-// Allow only your frontend domain in production, fallback to localhost:3000 in dev
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
+// Allow only your frontend domain(s) in production, fallback to localhost:3000 in dev
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+  .split(',')
+  .map(origin => origin.trim());
+
 app.use(cors({
-  origin: allowedOrigin,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
