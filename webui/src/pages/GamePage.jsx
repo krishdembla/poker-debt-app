@@ -23,11 +23,12 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 const getFormatter = (cur) => new Intl.NumberFormat('en-US', { style: 'currency', currency: cur });
 
 
+
 const GamePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { setGameId } = useContext(GameContext);
-  const { joinGame, leaveGame, ws } = useWebSocket();
+  const { ws, joinGame, leaveGame } = useWebSocket();
   const [summary, setSummary] = useState([]);
   const [currency, setCurrency] = useState('USD');
   const [title, setTitle] = useState('Game');
@@ -122,11 +123,14 @@ const GamePage = () => {
     }
   };
 
+  const [imbalance, setImbalance] = useState(0);
+
   const handleSettle = async () => {
     try {
       const res = await fetchSettlement(id);
       const txns = res.data.transactions;
       setTransactions(txns);
+      setImbalance(res.data.imbalance || 0);
       if (res.data.settledAt) setSettledAt(res.data.settledAt);
       showToast('Settlement calculated');
     } catch (err) {
@@ -202,39 +206,143 @@ const GamePage = () => {
                 setHistoryOpen(true);
               }}
               onEditCashOut={async () => {
-                const newCashOut = window.prompt(
-                  `Enter cash-out amount for ${player.name}:`, 
-                  player.cashOut || ''
-                );
+                // Create a container for our custom prompt
+                const container = document.createElement('div');
+                container.style.cssText = `
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background: rgba(0, 0, 0, 0.5);
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  z-index: 1000;
+                `;
+
+                // Create the dialog
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                  background: var(--bg-color, #ffffff);
+                  padding: 1.5rem;
+                  border-radius: 8px;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                  width: 90%;
+                  max-width: 400px;
+                  color: var(--text-primary, #333333);
+                `;
+
+                // Create the label
+                const label = document.createElement('div');
+                label.textContent = `Enter cash-out amount for ${player.name}:`;
+                label.style.cssText = 'margin-bottom: 1rem; font-weight: 500;';
+
+                // Create the input
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = '0';
+                input.step = '0.01';
+                input.value = player.cashOut || '';
+                input.style.cssText = `
+                  width: 100%;
+                  padding: 0.75rem;
+                  margin-bottom: 1rem;
+                  border: 2px solid var(--border-color, #cccccc);
+                  border-radius: 6px;
+                  background: var(--bg-color, #ffffff);
+                  color: var(--text-primary, #333333);
+                  font-size: 1rem;
+                  box-sizing: border-box;
+                  transition: border-color 0.2s;
+                `;
                 
-                // Apply styles to the prompt
-                setTimeout(() => {
-                  const promptInput = document.querySelector('input[type="text"]');
-                  if (promptInput) {
-                    promptInput.style.backgroundColor = 'var(--bg-color, #ffffff)';
-                    promptInput.style.color = 'var(--text-primary, #333333)';
-                    promptInput.style.border = '1px solid var(--border-color, #cccccc)';
-                    promptInput.style.padding = '8px';
-                    promptInput.style.borderRadius = '4px';
-                    promptInput.style.width = 'calc(100% - 20px)';
-                    promptInput.style.maxWidth = '300px';
-                  }
-                }, 10);
+                // Ensure text is visible in dark mode
+                input.style.setProperty('color', 'var(--text-primary, #333333)', 'important');
+                input.focus();
+
+                // Create button container
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.cssText = 'display: flex; justify-content: flex-end; gap: 0.75rem;';
+
+                // Create cancel button
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancel';
+                cancelButton.style.cssText = `
+                  padding: 0.5rem 1.25rem;
+                  border: 2px solid var(--border-color, #cccccc);
+                  border-radius: 6px;
+                  background: var(--bg-color, #ffffff);
+                  color: var(--text-primary, #333333);
+                  font-weight: 500;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                `;
                 
-                if (newCashOut !== null) {
-                  const val = Number(newCashOut);
-                  if (!isNaN(val) && val >= 0) {
-                    await addCashOut(id, { name: player.name, cashOut: val });
-                    refreshSummary();
-                    triggerAutoSave();
-                  } else if (newCashOut === '') {
+                // Add hover effect
+                cancelButton.onmouseover = () => {
+                  cancelButton.style.background = 'var(--border-color, #eeeeee)';
+                };
+                cancelButton.onmouseout = () => {
+                  cancelButton.style.background = 'var(--bg-color, #ffffff)';
+                };
+
+                // Create confirm button
+                const confirmButton = document.createElement('button');
+                confirmButton.textContent = 'Save';
+                confirmButton.style.cssText = `
+                  padding: 0.5rem 1.5rem;
+                  border: none;
+                  border-radius: 4px;
+                  background: var(--accent, #ff6b3d);
+                  color: white;
+                  font-weight: 500;
+                  cursor: pointer;
+                `;
+
+                // Add elements to the dialog
+                dialog.appendChild(label);
+                dialog.appendChild(input);
+                buttonContainer.appendChild(cancelButton);
+                buttonContainer.appendChild(confirmButton);
+                dialog.appendChild(buttonContainer);
+                container.appendChild(dialog);
+                document.body.appendChild(container);
+
+                // Handle button clicks
+                const cleanup = () => {
+                  document.body.removeChild(container);
+                };
+
+                const handleConfirm = async () => {
+                  const value = input.value.trim();
+                  if (value === '') {
                     await addCashOut(id, { name: player.name, cashOut: 0 });
                     refreshSummary();
                     triggerAutoSave();
+                    cleanup();
                   } else {
-                    showToast('Please enter a valid number');
+                    const val = Number(value);
+                    if (!isNaN(val) && val >= 0) {
+                      await addCashOut(id, { name: player.name, cashOut: val });
+                      refreshSummary();
+                      triggerAutoSave();
+                      cleanup();
+                    } else {
+                      showToast('Please enter a valid number');
+                      input.focus();
+                    }
                   }
-                }
+                };
+
+                input.addEventListener('keypress', (e) => {
+                  if (e.key === 'Enter') {
+                    handleConfirm();
+                  }
+                });
+
+                confirmButton.addEventListener('click', handleConfirm);
+                cancelButton.addEventListener('click', cleanup);
               }}
               onViewHistory={() => {
                 setSelectedPlayer(player);
@@ -328,6 +436,20 @@ const GamePage = () => {
               </li>
             ))}
           </ul>
+          {imbalance > 0.01 && (
+            <div style={{
+              padding: '1rem',
+              marginTop: '1rem',
+              backgroundColor: 'rgba(255, 152, 0, 0.1)',
+              borderRadius: '6px',
+              borderLeft: '4px solid #ff9800',
+              color: 'var(--text-primary, #333)',
+              lineHeight: '1.5'
+            }}>
+              <div><strong>Note:</strong> There is an imbalance of {formatter.format(imbalance)} between total buy-ins and cash-outs.</div>
+              <div>This amount could not be settled due to the mismatch in buy-in and cash-out totals.</div>
+            </div>
+          )}
         </div>
       )}
 

@@ -16,6 +16,7 @@ export const ThemeContext = createContext();
 
 function App() {
   const [theme, setTheme] = useState('light');
+  const [, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {

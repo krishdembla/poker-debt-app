@@ -221,3 +221,48 @@ button:disabled {
     width: 100%;
   }
 }
+
+
+.settlement-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.settlement-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0;
+}
+
+.settlement-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin: 5px 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.imbalance-warning {
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.imbalance-warning.positive {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  color: #856404;
+}
+
+.imbalance-warning.negative {
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+  color: #721c24;
+}

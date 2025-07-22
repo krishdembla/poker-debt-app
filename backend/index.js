@@ -379,7 +379,9 @@ app.post('/api/settle', (req, res) => {
   res.json({ transactions });
 });
 
+
 // Calculate optimal settlement transactions
+// In backend/index.js, update the /settle endpoint
 app.get('/api/game/:id/settle', (req, res) => {
   const { id } = req.params;
   const game = getGame(id, req.user.id);
@@ -387,28 +389,32 @@ app.get('/api/game/:id/settle', (req, res) => {
     return res.status(404).json({ error: 'Game not found' });
   }
 
-  // Ensure all players have cashed out
-  const missingCashOut = Object.entries(game.players)
-    .filter(([_, p]) => p.cashOut == null)
-    .map(([name]) => name);
-  if (missingCashOut.length > 0) {
-    return res.status(400).json({ error: `Players missing cash-out: ${missingCashOut.join(', ')}` });
-  }
-
   const netMap = {};
+  let totalBuyIns = 0;
+  let totalCashOuts = 0;
+
   for (const [name, player] of Object.entries(game.players)) {
     const totalBuyIn = player.buyIns.reduce((acc, val) => acc + val, 0);
-    const net = player.cashOut - totalBuyIn;
+    const cashOut = player.cashOut || 0;
+    const net = cashOut - totalBuyIn;
     netMap[name] = net;
+    totalBuyIns += totalBuyIn;
+    totalCashOuts += cashOut;
   }
 
-  const transactions = calculateSettlement(netMap);
-  // Store the most recent settlement time
+  const { transactions, imbalance } = calculateSettlement(netMap);
+  
   game.settledAt = new Date().toISOString();
   saveGame(id, game);
-  console.log('SettledAt value being returned:', game.settledAt); // Debug log
-  res.json({ transactions, settledAt: game.settledAt || null });
+  
+  res.json({ 
+    transactions, 
+    settledAt: game.settledAt,
+    imbalance: Math.abs(imbalance) > 0.01 ? parseFloat(imbalance.toFixed(2)) : 0
+  });
 });
+
+
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
