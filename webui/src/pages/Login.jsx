@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { login, setToken } from '../api';
 import ThemeToggle from '../components/ThemeToggle';
 import './GamePage.css'; // for button styles
@@ -11,7 +11,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/games';
 
   const handleSubmit = async (e) => {
     e.preventDefault();

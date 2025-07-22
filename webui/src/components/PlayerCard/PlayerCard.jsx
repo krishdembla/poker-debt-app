@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useSwipeable } from 'react-swipeable';
+import React from 'react';
 import './PlayerCard.css';
 
 const PlayerCard = ({

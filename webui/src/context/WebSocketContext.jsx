@@ -81,7 +81,7 @@ export const WebSocketProvider = ({ children }) => {
         wsRef.current.close();
       }
     };
-  }, []);
+  }, [connect]);
 
   const value = {
     isConnected,

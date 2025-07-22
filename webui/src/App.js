@@ -13,13 +13,9 @@ import './App.css';
 
 export const ThemeContext = createContext();
 
-// Helper to check if user is logged in
-function isLoggedIn() {
-  return !!localStorage.getItem('poker_token');
-}
-
 function App() {
   const [theme, setTheme] = useState('light');
+  const [, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
