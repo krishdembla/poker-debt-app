@@ -4,7 +4,8 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import EditGameDialog from '../components/EditGameDialog';
 import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
-import { listGames, createGame, clearToken, deleteGame, renameGame, updateGameDate } from '../api';
+import { listGames, createGame, deleteGame, renameGame, updateGameDate } from '../api';
+import { useAuth } from '../context/AuthContext';
 import { GameContext } from '../context/GameContext';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import CreateGameDialog from '../components/CreateGameDialog';
@@ -13,6 +14,7 @@ const GamesList = () => {
   const [games, setGames] = useState([]);
   const navigate = useNavigate();
   const { setGameId } = useContext(GameContext);
+  const { logOut } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -38,8 +40,8 @@ const GamesList = () => {
   const [logoutConfirm, setLogoutConfirm] = useState(false);
 
   const logout = () => {
-    clearToken();
-    window.location.href = '/login';
+    logOut();
+    navigate('/login', { replace: true });
   };
 
   const handleLogoutClick = () => {

@@ -24,7 +24,7 @@ const { body } = require('express-validator');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const PORT = process.env.PORT || 5051;
+const PORT = process.env.PORT || 5050;
 
 // WebSocket connection management
 const gameConnections = new Map(); // gameId -> Set of WebSocket connections
@@ -259,7 +259,7 @@ app.post('/api/game/:id/cashout',
   [
     body('cashOut')
       .isFloat({ min: 0, max: 999999.99 })
-      .withMessage('Cash-out amount must be a positive number less than 999,999.99')
+      .withMessage('Cash-out amount must be between 0 and 999,999.99')
       .toFloat()
   ],
   handleValidationErrors,

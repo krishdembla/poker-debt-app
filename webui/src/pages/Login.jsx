@@ -1,26 +1,34 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { login, setToken } from '../api';
+import { login } from '../api';
+import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
-import './GamePage.css'; // for button styles
-import '../App.css'; // for brand font
+import './GamePage.css';
+import '../App.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { logIn } = useAuth();
   const from = location.state?.from?.pathname || '/games';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
     try {
       const res = await login({ username, password });
-      setToken(res.data.token);
-      navigate('/games', { replace: true });
+      logIn(res.data.token);
+      navigate(from, { replace: true });
     } catch (e) {
-      setError(e.response?.data?.error || 'Login failed');
+      setError(e.response?.data?.error || 'Login failed. Check your credentials and try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -97,9 +105,10 @@ const Login = () => {
           <button
             type="submit"
             className="settle-button"
+            disabled={isSubmitting}
             style={{ width: '100%', fontSize: '1.1rem', padding: '0.8rem 0', marginBottom: 8 }}
           >
-            Login
+            {isSubmitting ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <p style={{ color: '#888', fontSize: '1rem', marginBottom: 0 }}>

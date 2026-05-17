@@ -1,11 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom';
-
-const TOKEN_KEY = 'poker_token';
+import { useAuth } from '../context/AuthContext';
 
 const RequireAuth = ({ children }) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const { isLoggedIn } = useAuth();
   const location = useLocation();
-  if (!token) {
+  if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   return children;

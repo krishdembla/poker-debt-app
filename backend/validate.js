@@ -1,11 +1,10 @@
 const { body, validationResult } = require('express-validator');
 
-// helper to wrap validation chain execution and error handling
 const withValidation = (validations) => async (req, res, next) => {
   await Promise.all(validations.map((v) => v.run(req)));
   const errors = validationResult(req);
   if (errors.isEmpty()) return next();
-  return res.status(422).json({ errors: errors.array() });
+  return res.status(400).json({ error: errors.array()[0].msg });
 };
 
 const validateBuyIn = withValidation([
@@ -26,7 +25,9 @@ const validateCashOut = withValidation([
 
 const validateAuth = withValidation([
   body('username').trim().notEmpty().withMessage('Username is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 chars'),
+  body('password')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/\d/).withMessage('Password must contain at least one number'),
 ]);
 
 const validateCreateGame = withValidation([

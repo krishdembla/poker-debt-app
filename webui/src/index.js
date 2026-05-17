@@ -7,6 +7,7 @@ import { GameProvider } from './context/GameContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { WebSocketProvider } from './context/WebSocketContext';
+import { AuthProvider } from './context/AuthContext';
 
 // Register service worker for offline support
 if ('serviceWorker' in navigator) {
@@ -25,15 +26,17 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <ToastProvider>
-          <WebSocketProvider>
-            <GameProvider>
-              <App />
-            </GameProvider>
-          </WebSocketProvider>
-        </ToastProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <WebSocketProvider>
+              <GameProvider>
+                <App />
+              </GameProvider>
+            </WebSocketProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
